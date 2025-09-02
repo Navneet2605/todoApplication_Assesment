@@ -1,6 +1,6 @@
-import { View, Text, Button, TouchableOpacity } from "react-native";
-import { Link } from "expo-router";
 import { Picker } from '@react-native-picker/picker';
+import { Link } from "expo-router";
+import { Text, TouchableOpacity, View } from "react-native";
 
 interface FilterCardProps {
   selectedUserId: number;

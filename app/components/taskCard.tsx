@@ -37,26 +37,25 @@ export const TaskCard: React.FC<TaskCardProps> = ({
     });
   };
 
-  const progress = useSharedValue(completed ? 1 : 0); // 0: unchecked, 1: checked
-  const ripple = useSharedValue(0); // 0 -> 1 while animating ripple
+  const progress = useSharedValue(completed ? 1 : 0); 
+  const ripple = useSharedValue(0); 
 
   useEffect(() => {
     progress.value = withTiming(completed ? 1 : 0, { duration: 220, easing: Easing.out(Easing.quad) });
-    // trigger a short ripple when state changes
+    
     ripple.value = 0;
     ripple.value = withTiming(1, { duration: 380, easing: Easing.out(Easing.cubic) });
   }, [completed, progress, ripple]);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      backgroundColor: progress.value > 0.5 ? 'rgb(187, 247, 208)' : 'rgb(254, 202, 202)', // green-200 : red-200
+      backgroundColor: progress.value > 0.5 ? 'rgb(187, 247, 208)' : 'rgb(254, 202, 202)', 
     };
   });
 
   const checkboxBgStyle = useAnimatedStyle(() => {
-    // Interpolate from white to green for the box fill
-    const backgroundColor = progress.value > 0.5 ? 'rgb(21, 128, 61)' : 'white'; // green-700 : white
-    const borderColor = progress.value > 0.5 ? 'rgb(21, 128, 61)' : 'rgb(107, 114, 128)'; // green-700 : gray-500
+    const backgroundColor = progress.value > 0.5 ? 'rgb(21, 128, 61)' : 'white'; 
+    const borderColor = progress.value > 0.5 ? 'rgb(21, 128, 61)' : 'rgb(107, 114, 128)'; 
     return { backgroundColor, borderColor } as any;
   });
 
@@ -68,10 +67,9 @@ export const TaskCard: React.FC<TaskCardProps> = ({
   });
 
   const rippleStyle = useAnimatedStyle(() => {
-    // expand from the checkbox position
-    const size = 16 + ripple.value * 800; // grow big enough to cover the card
+    const size = 16 + ripple.value * 800; 
     const opacity = 0.18 * (1 - ripple.value);
-    const color = progress.value > 0.5 ? 'rgb(21, 128, 61)' : 'rgb(239, 68, 68)'; // green-700 or red-500
+    const color = progress.value > 0.5 ? 'rgb(21, 128, 61)' : 'rgb(239, 68, 68)'; 
     return {
       width: size,
       height: size,

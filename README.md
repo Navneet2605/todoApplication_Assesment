@@ -73,12 +73,7 @@ npx expo start
 - Date display uses device locale with date + hour:minute.
 
 ### 📸 Screenshots / Demo
-Add your media to `assets/` and reference them here.
 
-```md
-![Main](assets/screenshots/main.png)
-![Add](assets/screenshots/add.png)
-```
-
-### 📄 License
-MIT
+![Screenshot 1](assets/images/ss1.png)
+![Screenshot 2](assets/images/ss2.png)
+![Screenshot 3](assets/images/ss3.png)
