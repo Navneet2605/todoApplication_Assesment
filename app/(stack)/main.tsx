@@ -11,11 +11,13 @@ import { deleteTodoThunk, loadTodosFromStorage, seedTodosFromApiIfEmpty, setFilt
 export default function MainScreen() {
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
+  // Select state with shallowEqual to reduce re-renders when array identity is stable
   const todos = useSelector((state: RootState) => state.todos.items, shallowEqual);
   const filter = useSelector((state: RootState) => state.todos.filter);
   const sort = useSelector((state: RootState) => state.todos.sort);
   const [selectedUserId, setSelectedUserId] = useState(1);
 
+  // On mount: hydrate from storage, then seed from API if empty
   useEffect(() => {
     (async () => {
       const action = await dispatch(loadTodosFromStorage());
@@ -26,8 +28,10 @@ export default function MainScreen() {
     })();
   }, [dispatch]);
 
+  // Derive available userIds once per todos change
   const userIds = useMemo(() => Array.from(new Set(todos.map(t => t.userId))), [todos]);
 
+  // Filter and sort are memoized to avoid recomputation and unnecessary list re-renders
   const filteredTodos = useMemo(() => {
     const filtered = todos.filter((todo) => {
       const matchesUser = todo.userId === selectedUserId;
@@ -51,12 +55,14 @@ export default function MainScreen() {
     return list;
   }, [todos, selectedUserId, filter, sort]);
 
+  // Simple derived counts; memoized because they depend on filteredTodos
   const totalCount = useMemo(() => filteredTodos.length, [filteredTodos]);
   const completedCount = useMemo(
     () => filteredTodos.filter((t) => t.completed).length,
     [filteredTodos]
   );
 
+  // Stable callbacks to keep row components memoized
   const handleToggle = useCallback((id: number) => {
     dispatch(toggleTodoThunk(id));
   }, [dispatch]);
@@ -69,6 +75,7 @@ export default function MainScreen() {
     router.push({ pathname: "/(stack)/add-todo", params: { userId: String(userId), id: String(id), title } });
   }, [router]);
 
+  // Render and key functions are memoized for FlatList perf
   const renderItem = useCallback(({ item }: { item: any }) => (
     <TaskCard
       title={item.title}
@@ -83,6 +90,7 @@ export default function MainScreen() {
 
   const keyExtractor = useCallback((item: any) => item.id?.toString() ?? Math.random().toString(), []);
 
+  // Wrap dispatchers to keep props stable for FilterCard
   const setFilterMemo = useCallback((f: "all" | "active" | "done") => dispatch(setFilter(f)), [dispatch]);
   const setSortMemo = useCallback((s: "recent" | "id") => dispatch(setSort(s)), [dispatch]);
 
@@ -108,9 +116,11 @@ export default function MainScreen() {
             userIds={userIds}
           />
         }
+        // Sticky header styling to avoid flicker; keep header background solid
         ListHeaderComponentStyle={{ zIndex: 2, backgroundColor: 'white' }}
         stickyHeaderIndices={[0]}
         contentContainerStyle={contentContainerStyle}
+        // Disable clipping to avoid header flicker while scrolling
         removeClippedSubviews={false}
         initialNumToRender={12}
         windowSize={7}

@@ -28,9 +28,11 @@ function FilterCard({
 }: FilterCardProps) {
   return (
     <View className="p-4 bg-gray-100 mb-2 rounded-3xl">
+        {/* Title kept here per design request */}
         <View className=" items-center justify-center mb-4 ">
              <Text className="font-bold text-lg">TODO</Text>
         </View>
+        {/* Quick add entry */}
         <Link
         href={{
           pathname: "/(stack)/add-todo",
@@ -43,6 +45,7 @@ function FilterCard({
          </TouchableOpacity>
        </Link>
       
+      {/* User picker */}
       <View className="mt-4">
         <Text className="text-black font-bold mb-2 text-center">Select User ID</Text>
        <View className="bg-gray-900 rounded-full px-3 py-1 overflow-hidden">
@@ -64,6 +67,7 @@ function FilterCard({
 </View>
       </View>
 
+      {/* Segmented control: filter */}
       <View className="mt-2">
         <Text className="text-black font-bold mb-2 text-center">Filter</Text>
         <View className="flex-row items-stretch rounded-full border border-gray-800 overflow-hidden">
@@ -96,6 +100,7 @@ function FilterCard({
         </View>
       </View>
 
+      {/* Segmented control: sort */}
       <View className="mt-4">
         <Text className="text-black font-bold mb-2 text-center">Sort By</Text>
         <View className="flex-row items-stretch rounded-full border border-gray-800 overflow-hidden">
@@ -119,6 +124,7 @@ function FilterCard({
         </View>
       </View>
 
+      {/* Summary */}
       <Text className="text-black text-center mt-4">
         User ID: {selectedUserId} | Total: {totalCount} | Completed: {completedCount}
       </Text>
@@ -126,6 +132,7 @@ function FilterCard({
   );
 }
 
+// Memoize to avoid re-rendering when irrelevant props don't change
 const areEqual = (
   prev: Readonly<FilterCardProps>,
   next: Readonly<FilterCardProps>

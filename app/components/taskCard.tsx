@@ -5,6 +5,7 @@ import React, { useEffect } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
+// Public item props used by TaskCard
 type TaskCardProps = {
   title: string;
   completed: boolean;
@@ -24,6 +25,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
   onEdit,
   onDelete,
 }) => {
+  // Format ISO timestamps for display
   const formatDateTime = (value: string) => {
     if (!value) return "";
     const d = new Date(value);
@@ -37,28 +39,32 @@ const TaskCard: React.FC<TaskCardProps> = ({
     });
   };
 
+  // Animated progress reflects completion state; ripple for visual feedback
   const progress = useSharedValue(completed ? 1 : 0); 
   const ripple = useSharedValue(0); 
 
   useEffect(() => {
+    // Smoothly transition toggle state and retrigger ripple
     progress.value = withTiming(completed ? 1 : 0, { duration: 220, easing: Easing.out(Easing.quad) });
-    
     ripple.value = 0;
     ripple.value = withTiming(1, { duration: 380, easing: Easing.out(Easing.cubic) });
   }, [completed, progress, ripple]);
 
+  // Background shifts between two gray shades based on completion
   const animatedStyle = useAnimatedStyle(() => {
     return {
       backgroundColor: progress.value > 0.5 ? 'rgb(229, 231, 235)' : 'rgb(243, 244, 246)',
     };
   });
 
+  // Checkbox fills black when completed, otherwise outlined gray
   const checkboxBgStyle = useAnimatedStyle(() => {
     const backgroundColor = progress.value > 0.5 ? 'black' : 'white';
     const borderColor = progress.value > 0.5 ? 'black' : 'rgb(107, 114, 128)';
     return { backgroundColor, borderColor } as any;
   });
 
+  // Checkmark scales/fades in with the progress
   const checkIconStyle = useAnimatedStyle(() => {
     return {
       transform: [{ scale: withTiming(progress.value, { duration: 200, easing: Easing.out(Easing.quad) }) }],
@@ -66,6 +72,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
     };
   });
 
+  // Subtle expanding ripple from the checkbox corner
   const rippleStyle = useAnimatedStyle(() => {
     const size = 16 + ripple.value * 800;
     const opacity = 0.12 * (1 - ripple.value);
@@ -111,6 +118,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
   );
 };
 
+// Memo comparator ignores function prop identity; only re-render on value changes
 const areEqual = (
   prev: Readonly<TaskCardProps>,
   next: Readonly<TaskCardProps>

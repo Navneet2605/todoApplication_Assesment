@@ -11,12 +11,17 @@ export default function AddTodoScreen() {
   const { userId, id, title: initialTitle } = useLocalSearchParams();
   const dispatch = useDispatch<AppDispatch>();
 
+  // Local UI state for title and submit loading flag
   const [title, setTitle] = useState(String(initialTitle ?? ""));
   const [loading, setLoading] = useState(false);
   const isEditMode = Boolean(id);
+
+  // Keep a ref to the input so we can focus it after selecting a suggestion
   const inputRef = useRef<TextInput>(null);
+  // Sequence guard to ensure only the latest suggestion tap wins
   const suggestionSeq = useRef(0);
 
+  // Hardcoded suggestions shown as chips under the input
   const suggestions = useMemo(
     () => [
       "Buy groceries",
@@ -29,6 +34,7 @@ export default function AddTodoScreen() {
     []
   );
 
+  // Selecting a suggestion always sets the input; if same as current, force-update next tick
   const selectSuggestion = useCallback((s: string) => {
     const seq = ++suggestionSeq.current;
     if (title === s) {
@@ -45,6 +51,7 @@ export default function AddTodoScreen() {
     }
   }, [title]);
 
+  // Submit handler: create/update todo through redux thunk, with basic validation
   const handleSubmit = useCallback(async (event: GestureResponderEvent): Promise<void> => {
     try {
       setLoading(true);
