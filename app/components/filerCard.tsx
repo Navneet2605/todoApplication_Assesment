@@ -12,7 +12,7 @@ interface FilterCardProps {
   setSort: (s: "recent" | "id") => void;
   totalCount: number;
   completedCount: number;
-  todos: { userId: number }[];
+  userIds: number[];
 }
 
 function FilterCard({
@@ -24,13 +24,11 @@ function FilterCard({
   setSort,
   totalCount,
   completedCount,
-  todos,
+  userIds,
 }: FilterCardProps) {
-  const userIds = Array.from(new Set(todos.map(t => t.userId)));
-
   return (
     <View className="p-4 bg-gray-100 mb-2 rounded-3xl">
-        <View className="flex-1 items-center justify-center mb-4 ">
+        <View className=" items-center justify-center mb-4 ">
              <Text className="font-bold text-lg">TODO</Text>
         </View>
         <Link
@@ -66,7 +64,7 @@ function FilterCard({
 </View>
       </View>
 
-      <View className="mt-4">
+      <View className="mt-2">
         <Text className="text-black font-bold mb-2 text-center">Filter</Text>
         <View className="flex-row items-stretch rounded-full border border-gray-800 overflow-hidden">
           <TouchableOpacity
@@ -138,7 +136,7 @@ const areEqual = (
     prev.sort === next.sort &&
     prev.totalCount === next.totalCount &&
     prev.completedCount === next.completedCount &&
-    prev.todos === next.todos
+    prev.userIds === next.userIds
   );
 };
 

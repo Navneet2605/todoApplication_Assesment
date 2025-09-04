@@ -26,6 +26,8 @@ export default function MainScreen() {
     })();
   }, [dispatch]);
 
+  const userIds = useMemo(() => Array.from(new Set(todos.map(t => t.userId))), [todos]);
+
   const filteredTodos = useMemo(() => {
     const filtered = todos.filter((todo) => {
       const matchesUser = todo.userId === selectedUserId;
@@ -89,7 +91,7 @@ export default function MainScreen() {
   return (
     <SafeAreaView className="flex-1 bg-white">
       <FlatList
-        className="py-2"
+        className=""
         data={filteredTodos}
         keyExtractor={keyExtractor}
         renderItem={renderItem}
@@ -103,12 +105,13 @@ export default function MainScreen() {
             setSort={setSortMemo}
             totalCount={totalCount}
             completedCount={completedCount}
-            todos={todos}
+            userIds={userIds}
           />
         }
+        ListHeaderComponentStyle={{ zIndex: 2, backgroundColor: 'white' }}
         stickyHeaderIndices={[0]}
         contentContainerStyle={contentContainerStyle}
-        removeClippedSubviews
+        removeClippedSubviews={false}
         initialNumToRender={12}
         windowSize={7}
       />
