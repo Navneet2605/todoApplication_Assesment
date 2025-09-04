@@ -15,7 +15,7 @@ type TaskCardProps = {
   onDelete?: () => void;
 };
 
-export const TaskCard: React.FC<TaskCardProps> = ({
+const TaskCard: React.FC<TaskCardProps> = ({
   title,
   completed,
   created_at,
@@ -49,13 +49,13 @@ export const TaskCard: React.FC<TaskCardProps> = ({
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      backgroundColor: progress.value > 0.5 ? 'rgb(187, 247, 208)' : 'rgb(254, 202, 202)', 
+      backgroundColor: progress.value > 0.5 ? 'rgb(229, 231, 235)' : 'rgb(243, 244, 246)',
     };
   });
 
   const checkboxBgStyle = useAnimatedStyle(() => {
-    const backgroundColor = progress.value > 0.5 ? 'rgb(21, 128, 61)' : 'white'; 
-    const borderColor = progress.value > 0.5 ? 'rgb(21, 128, 61)' : 'rgb(107, 114, 128)'; 
+    const backgroundColor = progress.value > 0.5 ? 'black' : 'white';
+    const borderColor = progress.value > 0.5 ? 'black' : 'rgb(107, 114, 128)';
     return { backgroundColor, borderColor } as any;
   });
 
@@ -67,9 +67,9 @@ export const TaskCard: React.FC<TaskCardProps> = ({
   });
 
   const rippleStyle = useAnimatedStyle(() => {
-    const size = 16 + ripple.value * 800; 
-    const opacity = 0.18 * (1 - ripple.value);
-    const color = progress.value > 0.5 ? 'rgb(21, 128, 61)' : 'rgb(239, 68, 68)'; 
+    const size = 16 + ripple.value * 800;
+    const opacity = 0.12 * (1 - ripple.value);
+    const color = 'black';
     return {
       width: size,
       height: size,
@@ -86,7 +86,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
 
       <Text className="text-lg font-semibold mb-2">{title}</Text>
       <Text className="mb-1">
-        Status: <Text className={completed ? 'text-green-700' : 'text-red-700'}>{completed ? 'Completed' : 'Pending'}</Text>
+        Status: <Text className={completed ? 'text-gray-900' : 'text-gray-600'}>{completed ? 'Done' : 'Active'}</Text>
       </Text>
       <Text className="text-xs text-gray-600 mb-1">Created: {formatDateTime(created_at)}</Text>
       <Text className="text-xs text-gray-600">Updated: {formatDateTime(updated_at)}</Text>
@@ -102,7 +102,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
           <TouchableOpacity onPress={onEdit} className="px-3 py-2 rounded-lg bg-black">
             <Ionicons name="pencil" size={16} color="white" />
           </TouchableOpacity>
-          <TouchableOpacity onPress={onDelete} className="px-3 py-2 rounded-lg bg-red-600">
+          <TouchableOpacity onPress={onDelete} className="px-3 py-2 rounded-lg bg-gray-800">
             <Ionicons name="trash" size={16} color="white" />
           </TouchableOpacity>
         </View>
@@ -110,4 +110,20 @@ export const TaskCard: React.FC<TaskCardProps> = ({
     </Animated.View>
   );
 };
-export default TaskCard;
+
+const areEqual = (
+  prev: Readonly<TaskCardProps>,
+  next: Readonly<TaskCardProps>
+) => {
+  return (
+    prev.title === next.title &&
+    prev.completed === next.completed &&
+    prev.created_at === next.created_at &&
+    prev.updated_at === next.updated_at
+  );
+};
+
+const MemoTaskCard = React.memo(TaskCard, areEqual);
+
+export { MemoTaskCard as TaskCard };
+export default MemoTaskCard;

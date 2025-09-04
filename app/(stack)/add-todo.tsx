@@ -1,6 +1,6 @@
 
 import { useLocalSearchParams, useRouter } from "expo-router";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { Alert, GestureResponderEvent, SafeAreaView, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../store";
@@ -15,7 +15,7 @@ export default function AddTodoScreen() {
   const [loading, setLoading] = useState(false);
   const isEditMode = Boolean(id);
 
-  async function handleSubmit(event: GestureResponderEvent): Promise<void> {
+  const handleSubmit = useCallback(async (event: GestureResponderEvent): Promise<void> => {
     try {
       setLoading(true);
       const parsedUserId = Number(userId ?? 0) || 0;
@@ -35,7 +35,7 @@ export default function AddTodoScreen() {
       setLoading(false);
       Alert.alert("Error", "Failed to add todo");
     }
-  }
+  }, [dispatch, id, isEditMode, router, title, userId]);
 
   return (
     <SafeAreaView className="flex-1 bg-white pt-6">
