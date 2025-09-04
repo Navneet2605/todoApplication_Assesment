@@ -6,13 +6,14 @@ import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import FilterCard from "../components/filerCard";
 import { TaskCard } from "../components/taskCard";
 import { AppDispatch, RootState } from "../store";
-import { deleteTodoThunk, loadTodosFromStorage, seedTodosFromApiIfEmpty, setFilter, toggleTodoThunk } from "../store/todoSlice";
+import { deleteTodoThunk, loadTodosFromStorage, seedTodosFromApiIfEmpty, setFilter, setSort, toggleTodoThunk } from "../store/todoSlice";
 
 export default function MainScreen() {
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
   const todos = useSelector((state: RootState) => state.todos.items, shallowEqual);
   const filter = useSelector((state: RootState) => state.todos.filter);
+  const sort = useSelector((state: RootState) => state.todos.sort);
   const [selectedUserId, setSelectedUserId] = useState(1);
 
   useEffect(() => {
@@ -25,10 +26,8 @@ export default function MainScreen() {
     })();
   }, [dispatch]);
 
-  // updated the states and useMemo to handle the unnecessary rerenders
-
   const filteredTodos = useMemo(() => {
-    return todos.filter((todo) => {
+    const filtered = todos.filter((todo) => {
       const matchesUser = todo.userId === selectedUserId;
       if (!matchesUser) return false;
       if (filter === "all") return true;
@@ -36,7 +35,19 @@ export default function MainScreen() {
       if (filter === "done") return todo.completed;
       return true;
     });
-  }, [todos, selectedUserId, filter]);
+
+    const list = [...filtered];
+    if (sort === "recent") {
+      list.sort((a, b) => {
+        const aTime = new Date(a.updated_at ?? a.created_at ?? 0).getTime();
+        const bTime = new Date(b.updated_at ?? b.created_at ?? 0).getTime();
+        return bTime - aTime; // most recent first
+      });
+    } else if (sort === "id") {
+      list.sort((a, b) => a.id - b.id);
+    }
+    return list;
+  }, [todos, selectedUserId, filter, sort]);
 
   const totalCount = useMemo(() => filteredTodos.length, [filteredTodos]);
   const completedCount = useMemo(
@@ -71,6 +82,7 @@ export default function MainScreen() {
   const keyExtractor = useCallback((item: any) => item.id?.toString() ?? Math.random().toString(), []);
 
   const setFilterMemo = useCallback((f: "all" | "active" | "done") => dispatch(setFilter(f)), [dispatch]);
+  const setSortMemo = useCallback((s: "recent" | "id") => dispatch(setSort(s)), [dispatch]);
 
   const contentContainerStyle = useMemo(() => ({ paddingBottom: 20 }), []);
 
@@ -87,6 +99,8 @@ export default function MainScreen() {
             setSelectedUserId={setSelectedUserId}
             filter={filter}
             setFilter={setFilterMemo}
+            sort={sort}
+            setSort={setSortMemo}
             totalCount={totalCount}
             completedCount={completedCount}
             todos={todos}

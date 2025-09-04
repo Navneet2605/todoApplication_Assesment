@@ -8,6 +8,8 @@ interface FilterCardProps {
   setSelectedUserId: (id: number) => void;
   filter: "all" | "active" | "done";
   setFilter: (f: "all" | "active" | "done") => void;
+  sort: "recent" | "id";
+  setSort: (s: "recent" | "id") => void;
   totalCount: number;
   completedCount: number;
   todos: { userId: number }[];
@@ -18,6 +20,8 @@ function FilterCard({
   setSelectedUserId,
   filter,
   setFilter,
+  sort,
+  setSort,
   totalCount,
   completedCount,
   todos,
@@ -81,6 +85,25 @@ function FilterCard({
           <Text className="text-white font-bold">Done</Text>
         </TouchableOpacity>
       </View>
+
+      <View className="mt-4">
+        <Text className="text-black font-bold mb-2 text-center">Sort By</Text>
+        <View className="flex-row justify-around">
+          <TouchableOpacity
+            className={`px-4 py-2 mx-1 rounded-full ${sort === 'recent' ? 'bg-black' : 'bg-gray-700'}`}
+            onPress={() => setSort('recent')}
+          >
+            <Text className="text-white font-bold">Recent</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            className={`px-4 py-2 mx-1 rounded-full ${sort === 'id' ? 'bg-black' : 'bg-gray-700'}`}
+            onPress={() => setSort('id')}
+          >
+            <Text className="text-white font-bold">ID</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+
       <Text className="text-black text-center mt-4">
         User ID: {selectedUserId} | Total: {totalCount} | Completed: {completedCount}
       </Text>
@@ -95,6 +118,7 @@ const areEqual = (
   return (
     prev.selectedUserId === next.selectedUserId &&
     prev.filter === next.filter &&
+    prev.sort === next.sort &&
     prev.totalCount === next.totalCount &&
     prev.completedCount === next.completedCount &&
     prev.todos === next.todos
