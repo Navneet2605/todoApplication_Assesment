@@ -1,6 +1,6 @@
 
 import { useLocalSearchParams, useRouter } from "expo-router";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import { Alert, GestureResponderEvent, SafeAreaView, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../store";
@@ -14,6 +14,8 @@ export default function AddTodoScreen() {
   const [title, setTitle] = useState(String(initialTitle ?? ""));
   const [loading, setLoading] = useState(false);
   const isEditMode = Boolean(id);
+  const inputRef = useRef<TextInput>(null);
+  const suggestionSeq = useRef(0);
 
   const suggestions = useMemo(
     () => [
@@ -28,11 +30,18 @@ export default function AddTodoScreen() {
   );
 
   const selectSuggestion = useCallback((s: string) => {
+    const seq = ++suggestionSeq.current;
     if (title === s) {
       setTitle("");
-      requestAnimationFrame(() => setTitle(s));
+      setTimeout(() => {
+        if (suggestionSeq.current === seq) {
+          setTitle(s);
+          setTimeout(() => inputRef.current?.focus(), 0);
+        }
+      }, 0);
     } else {
       setTitle(s);
+      setTimeout(() => inputRef.current?.focus(), 0);
     }
   }, [title]);
 
@@ -68,6 +77,7 @@ export default function AddTodoScreen() {
         User ID: {userId}
       </Text>
       <TextInput
+        ref={inputRef}
         className="bg-neutral-200 text-black p-3 rounded-3xl mb-3 py-4"
         placeholder="Todo Title"
         placeholderTextColor="#888"
